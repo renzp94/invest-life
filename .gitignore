@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+*.log
+
+# 部署时临时组装的站点目录
+_site/

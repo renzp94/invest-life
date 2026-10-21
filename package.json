@@ -1,0 +1,15 @@
+{
+  "name": "invest-life",
+  "version": "1.0.0",
+  "private": true,
+  "description": "用真实历史行情做的像素风投资模拟游戏，产物是单个 index.html",
+  "scripts": {
+    "build": "node build.js",
+    "check": "node build.js --check",
+    "dev": "node scripts/dev.mjs",
+    "serve": "node scripts/dev.mjs --no-watch --no-open"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,74 @@
+name: Deploy Pages
+
+# 什么时候部署：
+#   1. 推送 main —— 保持线上永远是最新构建
+#   2. 推 v* 标签 —— 发版（v1.0.0、v1.2 之类）
+#   3. 手动触发 —— Actions 页面点 Run workflow
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+# Pages 部署需要的权限，缺一不可：
+#   contents: read  读仓库
+#   pages: write    发布到 Pages
+#   id-token: write OIDC，deploy-pages 用它换部署凭证
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个部署；连推两次时不打断正在进行的发布
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: 构建
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 构建会校验每个标的的字段、日期顺序与 OHLC 自洽性，
+      # 数据有问题就直接失败，不会把坏包发上线
+      - name: 校验数据并构建
+        run: npm run build
+
+      # 只发布 index.html —— 源码、数据、截图都留在仓库里，不必进站点
+      - name: 组装站点
+        run: |
+          mkdir -p _site
+          cp index.html _site/index.html
+          touch _site/.nojekyll
+          du -h _site/index.html
+
+      # enablement: true 让首次部署时自动为仓库开启 Pages（Source = GitHub Actions）
+      - name: 配置 Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: 上传产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    name: 发布
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: 部署到 GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
