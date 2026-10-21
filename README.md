@@ -136,7 +136,9 @@ invest-life/
 | 推 `v*` 标签（`git tag v1.0.1 && git push --tags`） | 发版，同样触发一次发布 |
 | Actions 页面手动 Run workflow | 想重发一次时用 |
 
-每次发布都会先跑 `npm run build`，数据校验不过就直接失败，不会把坏包发上线；站点里只放 `index.html` 一个文件（Gzip 后几百 KB），源码、数据、截图都留在仓库。首次部署会自动为仓库开启 Pages（Source = GitHub Actions），若没开启成功，去 Settings → Pages 把 Source 改成 **GitHub Actions** 再重跑一次即可。
+每次发布都会先跑 `npm run build`，数据校验不过就直接失败，不会把坏包发上线；站点里只放 `index.html` 一个文件（Gzip 后几百 KB），源码、数据、截图都留在仓库。
+
+首次需要在 **Settings → Pages → Build and deployment** 把 Source 设为 **GitHub Actions**。这一步只能用仓库管理员操作，`GITHUB_TOKEN` 没有创建 Pages 站点的权限（会报 `Resource not accessible by integration`），所以没法在 workflow 里代办；设置一次之后，后续每次推送都会自动发布，不用再管。
 
 ## 换成你自己的数据
 

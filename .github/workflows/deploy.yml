@@ -50,7 +50,9 @@ jobs:
           touch _site/.nojekyll
           du -h _site/index.html
 
-      # enablement: true 让首次部署时自动为仓库开启 Pages（Source = GitHub Actions）
+      # 站点已启用时这里只是读配置；enablement: true 会在站点不存在时尝试创建，
+      # 但 GITHUB_TOKEN 没有管理员权限，调 createPagesSite 必然 403，
+      # 所以首次启用仍需在 Settings → Pages 手动把 Source 选成 GitHub Actions
       - name: 配置 Pages
         uses: actions/configure-pages@v5
         with:
