@@ -1,0 +1,10 @@
+node_modules/
+.DS_Store
+*.log
+
+# 演示视频体积大，不进仓库（脚本可复现）
+docs/vlog/*.mp4
+docs/vlog/audio/*.wav
+
+# 部署时临时组装的站点目录
+_site/
